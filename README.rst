@@ -1,15 +1,16 @@
-hublib
-======
+nanohublib
+==========
 
-hublib is a Python library for the `HUBzero`_ science gateway platform.  It is designed
+nanohublib is a Python library for the `HUBzero`_ science gateway platform.  It is designed
 to be used with  `Jupyter`_ notebooks on the hubs, although the ui module should work in any notebooks.
 Hubs running the Jupyter service
 include HUBzero and `nanoHUB`_.  
 
-* hublib.ui - Makes it easy to create a simple GUI for scientific code in a Jupyter notebook.  Built
+* nanohublib.ui - Makes it easy to create a simple GUI for scientific code in a Jupyter notebook.  Built
   on top of `ipywidgets`_ and `pint`_.
-* hublib.use - Loads hub environment modules.
+* nanohublib.use - Loads hub environment modules.
 
+Inspired by hublib from Martin Hunt.
 
 The complete documentation is hosted at https://hubzero.github.io/hublib/
 

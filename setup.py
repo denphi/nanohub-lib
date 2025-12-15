@@ -1,102 +1,32 @@
-from __future__ import print_function
-from setuptools import setup
+#  Copyright 2025 HUBzero Foundation, LLC.
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in
+#  all copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#  THE SOFTWARE.
+
+#  HUBzero is a registered trademark of Purdue University.
+
+#  Authors:
+#  Daniel Mejia (denphi), Purdue University (denphi@denphi.com)
+
+from setuptools import setup, find_packages
 import io
-import sys
-from setuptools.command.test import test as TestCommand
-import inspect
-from distutils.cmd import Command
 import re
-
-
-class PyTest(TestCommand):
-    user_options = [("cov=", None, "Run coverage"),
-                    ("cov-xml=", None, "Generate junit xml report"),
-                    ("cov-html=", None, "Generate junit html report"),
-                    ("junitxml=", None, "Generate xml of test results")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.cov = None
-        self.cov_xml = False
-        self.cov_html = False
-        self.junitxml = None
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        if self.cov is not None:
-            self.cov = ["--cov", self.cov, "--cov-report", "term-missing"]
-            if self.cov_xml:
-                self.cov.extend(["--cov-report", "xml"])
-            if self.cov_html:
-                self.cov.extend(["--cov-report", "html"])
-        if self.junitxml is not None:
-            self.junitxml = ["--junitxml", self.junitxml]
-
-    def run_tests(self):
-        try:
-            import pytest
-        except:
-            raise RuntimeError("py.test is not installed, "
-                               "run: pip install pytest")
-        params = {"args": self.test_args}
-        if self.cov:
-            params["args"] += self.cov
-        if self.junitxml:
-            params["args"] += self.junitxml
-        errno = pytest.main(**params)
-        sys.exit(errno)
-
-
-def sphinx_builder():
-    try:
-        from sphinx.setup_command import BuildDoc
-    except ImportError:
-        class NoSphinx(Command):
-            user_options = []
-
-            def initialize_options(self):
-                raise RuntimeError("Sphinx documentation is not installed, "
-                                   "run: pip install sphinx")
-
-        return NoSphinx
-
-    class BuildSphinxDocs(BuildDoc):
-
-        def run(self):
-            if self.builder == "doctest":
-                import sphinx.ext.doctest as doctest
-                # Capture the DocTestBuilder class in order to return the total
-                # number of failures when exiting
-                ref = capture_objs(doctest.DocTestBuilder)
-                BuildDoc.run(self)
-                errno = ref[-1].total_failures
-                sys.exit(errno)
-            else:
-                BuildDoc.run(self)
-
-    return BuildSphinxDocs
-
-
-class ObjKeeper(type):
-    instances = {}
-
-    def __init__(cls, name, bases, dct):
-        cls.instances[cls] = []
-
-    def __call__(cls, *args, **kwargs):
-        cls.instances[cls].append(super(ObjKeeper, cls).__call__(*args, **kwargs))
-        return cls.instances[cls][-1]
-
-
-def capture_objs(cls):
-    from six import add_metaclass
-    module = inspect.getmodule(cls)
-    name = cls.__name__
-    keeper_class = add_metaclass(ObjKeeper)(cls)
-    setattr(module, name, keeper_class)
-    cls = getattr(module, name)
-    return keeper_class.instances[cls]
-
+import os
 
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
@@ -107,32 +37,31 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+def get_version():
+    with open(os.path.join('nanohublib', '__init__.py')) as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return line.split('=')[1].strip().strip('"\'')
+    raise RuntimeError('No version info found.')
 
 long_description = read('README.rst', 'CHANGES.rst')
 
-# Additional setup commands
-cmdclass = {
-    'docs': sphinx_builder(),
-    'test': PyTest
-}
-
-
 setup(
-    name='hublib',
-    version='0.9.96',
-    url='https://github.com/hubzero/hublib',
+    name='nanohub-lib',
+    version=get_version(),
+    url='https://github.com/denphi/nanohub-lib',
     license='MIT Software License',
-    author='Martin Hunt',
-    install_requires=['ipywidgets>=7.0', 'pint', 'joblib', 'filelock'],
-    author_email='mmh@purdue.edu',
-    description='Python library for HUBzero Jupyter Notebooks',
+    author='Daniel Mejia',
+    install_requires=['ipywidgets>=7.0', 'pint', 'joblib', 'filelock', 'anywidget'],
+    extras_require={
+        'test': ['pytest', 'pytest-cov'],
+    },
+    author_email='denphi@denphi.com',
+    description='Python library for HUBzero Jupyter Notebooks. Inspired by hublib from Martin Hunt.',
     long_description=long_description,
-    packages=['hublib', 'hublib.uq', 'hublib.ui', 'hublib.cmd',
-              'hublib.tool', 'hublib.use', 'hublib.rappture', 'hublib.util'],
+    packages=find_packages(),
     include_package_data=True,
     platforms='any',
-    tests_require=['pytest-cov', 'pytest'],
-    cmdclass=cmdclass,
     classifiers=[
         'Programming Language :: Python',
         'Development Status :: 3 - Alpha',
