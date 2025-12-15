@@ -75,6 +75,21 @@ class NumValue(widgets.HBox):
             return widgets.BoundedFloatText(value=value, min=min, max=max)
         return widgets.FloatText(value=value)
 
+    def _parse(self, x):
+        if x is None:
+            return None
+        if isinstance(x, (int, float)):
+            return x
+        try:
+            p = ureg.parse_expression(str(x))
+            if hasattr(p, 'units'):
+                if self.units_str:
+                    return p.to(self.units_str).magnitude
+                return p.magnitude
+            return float(p)
+        except:
+            return x
+
     def __init__(self, ntype, name, value, **kwargs):
 
         width = kwargs.get('width', 'auto')
@@ -88,8 +103,9 @@ class NumValue(widgets.HBox):
         self.units_str, self.units_tex = parse_units(kwargs.get('units'))
 
         self.name = name
-        _min = kwargs.get('min')
-        _max = kwargs.get('max')
+        _min = self._parse(kwargs.get('min'))
+        _max = self._parse(kwargs.get('max'))
+        value = self._parse(value)
 
         self._widget = self._create_widget(ntype, value, _min, _max)
         self._widget.layout = {'width': 'auto'}
