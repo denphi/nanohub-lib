@@ -92,7 +92,8 @@ class PathSelector():
                 self.select.value = ()
 
     def _ipython_display_(self):
-        self.accord._ipython_display_()
+        from IPython.display import display
+        display(self.accord)
 
     @property
     def disabled(self):

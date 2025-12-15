@@ -206,7 +206,8 @@ class Editor(widgets.DOMWidget):
         self.ed.fontsize = val
 
     def _ipython_display_(self):
-        self.ed._ipython_display_()
+        from IPython.display import display
+        display(self.ed)
         self.ed.state = 'start'
         self.ed.theme = self._theme
         self.ed.mode = self._mode

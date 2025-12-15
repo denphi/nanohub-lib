@@ -367,7 +367,8 @@ class FileUpload(object):
         self.w.layout.visibility = 'hidden'
 
     def _ipython_display_(self):
-        self.w._ipython_display_()
+        from IPython.display import display
+        display(self.w)
 
 
 def pwidget(name, num, basic):

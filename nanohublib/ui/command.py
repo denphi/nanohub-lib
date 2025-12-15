@@ -272,7 +272,8 @@ class RunCommand(object):
         return w.HBox([status, b1, b2], layout=_layout)
 
     def _ipython_display_(self):
-        self.w._ipython_display_()
+        from IPython.display import display
+        display(self.w)
 
     @property
     def disabled(self):

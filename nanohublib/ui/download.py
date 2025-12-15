@@ -67,4 +67,5 @@ class Download(object):
         self.w.on_click(button_cb(filename))
 
     def _ipython_display_(self):
-        self.w._ipython_display_()
+        from IPython.display import display
+        display(self.w)
