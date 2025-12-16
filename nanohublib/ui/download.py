@@ -47,24 +47,30 @@ class Download(object):
         style = kwargs.get('style', '')
         bcb = kwargs.get('cb', None)
 
-        self.w = widgets.Button(
-            description=label,
-            icon=icon,
-            tooltip=tooltip,
-            button_style=style
-            )
-
-        def button_cb(filename):
-
-            js = Javascript("window.open('%s')" % filename)
-
-            def cb(x):
-                if bcb is not None:
-                    bcb()
-                display(js)
-            return cb
-
-        self.w.on_click(button_cb(filename))
+        # Create a download link styled as a button
+        # This is more robust than Javascript window.open in JupyterLab
+        
+        # Default bootstrap style classes for buttons if not provided
+        btn_class = "p-Widget jupyter-widgets jupyter-button widget-button"
+        if style:
+            btn_class += f" mod-{style}"
+            
+        icon_html = f'<i class="fa fa-{icon}"></i> ' if icon else ''
+        
+        html = f'''
+        <a href="{filename}" download="{filename}" class="{btn_class}" style="text-decoration:none; color:inherit; display:inline-block; text-align:center; line-height:28px; padding:0 10px;" target="_blank">
+            {icon_html}{label}
+        </a>
+        '''
+        
+        self.w = widgets.HTML(value=html)
+        
+        # No callback support for the HTML link method effectively, 
+        # but the download action is handled by the browser.
+        if bcb:
+            # We can't easily hook into the click of the HTML element from Python 
+            # without more complex JS/AnyWidget. 
+            pass 
 
     def _ipython_display_(self):
         from IPython.display import display

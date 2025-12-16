@@ -52,7 +52,7 @@ setup(
     url='https://github.com/denphi/nanohub-lib',
     license='MIT Software License',
     author='Daniel Mejia',
-    install_requires=['ipywidgets>=7.0', 'pint', 'joblib', 'filelock', 'anywidget'],
+    install_requires=['ipywidgets>=7.0,<8.0', 'pint', 'joblib', 'filelock', 'anywidget', 'pyyaml', 'nbformat', 'papermill', 'jsonpickle', 'mendeleev', 'Pillow', 'numpy', 'ipympl', 'py3Dmol'],
     extras_require={
         'test': ['pytest', 'pytest-cov'],
     },

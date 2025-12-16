@@ -114,7 +114,7 @@ class Submit(object):
             cachetabdir = os.path.join(Submit.CACHETABDIR, cachename)
             if not os.path.isdir(cachedir):
                 os.makedirs(cachedir)
-            memory = Memory(cachedir=cachetabdir, verbose=0)
+            memory = Memory(location=cachetabdir, verbose=0)
 
             @memory.cache
             def make_rname(*args):

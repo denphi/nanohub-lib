@@ -15,6 +15,7 @@ Contents:
     ui.rst
     use.rst
     util.rst
+    rappture.rst
 
 Indices and tables
 ==================

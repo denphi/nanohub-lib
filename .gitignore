@@ -89,3 +89,17 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Generated Documentation
+*.html
+*.js
+!nanohublib/ui/*.html
+!nanohublib/ui/*.js
+!docs/*.html
+docs/_build/
+doctrees/
+_images/
+_sources/
+_static/
+searchindex.js
+objects.inv
